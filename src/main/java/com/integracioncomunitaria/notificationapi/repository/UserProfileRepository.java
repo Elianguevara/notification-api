@@ -1,0 +1,7 @@
+package com.integracioncomunitaria.notificationapi.repository;
+
+import com.integracioncomunitaria.notificationapi.entity.UserProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserProfileRepository extends JpaRepository<UserProfile, Integer> {
+}

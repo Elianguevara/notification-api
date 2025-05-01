@@ -1,5 +1,7 @@
+// src/main/java/com/integracioncomunitaria/notificationapi/entity/User.java
 package com.integracioncomunitaria.notificationapi.entity;
 
+import com.integracioncomunitaria.notificationapi.entity.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "`user`")
 @Getter @Setter
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,45 +47,24 @@ public class User implements UserDetails {
     @Column(name = "enabled", columnDefinition = "TINYINT(1)")
     private Boolean enabled;
 
-    // Auditoría
-    @Column(name = "id_user_create")
-    private Integer idUserCreate;
-
-    @Column(name = "id_user_update")
-    private Integer idUserUpdate;
-
-    @Column(name = "date_create", updatable = false)
-    private LocalDateTime dateCreate;
-
-    @Column(name = "date_update")
-    private LocalDateTime dateUpdate;
-
-    /**
-     * Relación uno a uno: User ← user_profile.user_id
-     * (el lado propietario es UserProfile)
-     */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile profile;
 
-    // --- Métodos de UserDetails ---
     @Override
-public Collection<? extends GrantedAuthority> getAuthorities() {
-    if (this.profile == null || this.profile.getRoleType() == null) {
-        // Mejor lanzar IllegalStateException que devolver null
-        throw new IllegalStateException(
-          "El usuario " + this.getEmail() + " no tiene rol asignado."
-        );
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.profile == null || this.profile.getRoleType() == null) {
+            throw new IllegalStateException(
+              "El usuario " + this.getEmail() + " no tiene rol asignado."
+            );
+        }
+        String roleName = "ROLE_" + profile.getRoleType().name().toUpperCase();
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
-    String roleName = "ROLE_" + profile.getRoleType().name().toUpperCase();
-    return List.of(new SimpleGrantedAuthority(roleName));
-}
 
-    
-    
-    @Override public String getUsername()        { return username; }
-    @Override public String getPassword()        { return password; }
-    @Override public boolean isAccountNonExpired()   { return true; }
-    @Override public boolean isAccountNonLocked()    { return enabled; }
-    @Override public boolean isCredentialsNonExpired(){ return true; }
-    @Override public boolean isEnabled()             { return enabled; }
+    @Override public String getUsername()               { return username; }
+    @Override public String getPassword()               { return password; }
+    @Override public boolean isAccountNonExpired()      { return true; }
+    @Override public boolean isAccountNonLocked()       { return enabled; }
+    @Override public boolean isCredentialsNonExpired()  { return true; }
+    @Override public boolean isEnabled()                { return enabled; }
 }

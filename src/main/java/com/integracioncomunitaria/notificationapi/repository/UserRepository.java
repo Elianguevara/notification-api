@@ -10,12 +10,12 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
-    // Pero para login, usamos este que ya trae el profile
-    @Query("""
+     @Query("""
       SELECT u 
       FROM User u 
-      JOIN FETCH u.profile p 
+      LEFT JOIN FETCH u.profile p 
       WHERE u.email = :email
     """)
     Optional<User> findByEmailWithProfile(@Param("email") String email);
 }
+
