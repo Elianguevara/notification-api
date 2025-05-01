@@ -32,4 +32,14 @@ public class NotificationHistory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_notification", insertable = false, updatable = false)
     private Notification notification;
+
+    public Integer getIdUser() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIdUser'");
+    }
+
+    public void setIdUser(Integer userId2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setIdUser'");
+    }
 }

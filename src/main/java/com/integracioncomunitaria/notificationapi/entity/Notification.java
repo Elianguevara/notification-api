@@ -11,6 +11,14 @@ import lombok.Setter;
 @Getter @Setter
 public class Notification extends BaseEntity {
 
+    public Notification(Integer notifId) {
+        //TODO Auto-generated constructor stub
+    }
+
+    public Notification() {
+        //TODO Auto-generated constructor stub
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_notification")
@@ -38,4 +46,9 @@ public class Notification extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_customer", insertable = false, updatable = false)
     private Customer customer;
+
+    public boolean isViewed() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isViewed'");
+    }
 }

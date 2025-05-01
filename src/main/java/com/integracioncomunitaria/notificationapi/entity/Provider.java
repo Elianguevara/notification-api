@@ -10,6 +10,10 @@ import lombok.Setter;
 @Getter @Setter
 public class Provider extends BaseEntity {
 
+    public Provider(Integer providerId) {
+        //TODO Auto-generated constructor stub
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_provider")

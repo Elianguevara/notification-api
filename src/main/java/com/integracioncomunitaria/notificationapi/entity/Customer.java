@@ -13,6 +13,10 @@ import java.time.LocalDate;
 @Getter @Setter
 public class Customer extends BaseEntity {
 
+    public Customer(Integer customerId) {
+        //TODO Auto-generated constructor stub
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_customer")
