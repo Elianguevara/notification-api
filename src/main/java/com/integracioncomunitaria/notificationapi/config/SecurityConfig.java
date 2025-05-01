@@ -1,18 +1,28 @@
+// src/main/java/com/integracioncomunitaria/notificationapi/config/SecurityConfig.java
 package com.integracioncomunitaria.notificationapi.config;
 
-import com.integracioncomunitaria.notificationapi.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.integracioncomunitaria.notificationapi.service.CustomUserDetailsService;
+
+import java.util.Optional;
+
 @Configuration
 @EnableWebSecurity
+// Habilitamos el auditorAwareRef para Spring Data JPA Auditing
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class SecurityConfig {
 
     private final JwtTokenUtil jwtUtil;
@@ -33,21 +43,15 @@ public class SecurityConfig {
           .authorizeHttpRequests(auth -> auth
              .requestMatchers("/auth/**").permitAll()
              .requestMatchers("/api/notifications/**")
-                .hasAnyAuthority("ROLE_CUSTOMER","ROLE_PROVIDER","ROLE_BOTH")
+                .hasAnyAuthority("ROLE_CLIENTE","ROLE_PROVEEDOR","ROLE_AMBOS")
              .anyRequest().denyAll()
           )
-          // Usamos nuestro UserDetailsService
           .userDetailsService(uds)
-          // Insertamos el filtro JWT
           .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * Registramos un AuthenticationManager que use customUserDetailsService
-     * y el encoder que definimos abajo (NoOp, para texto plano).
-     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authBuilder =
@@ -60,12 +64,27 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 
-    /**
-     * NO OPCODE EN PRODUCCIÓN.
-     * Permite comparar directamente texto plano contra texto plano.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Sólo para desarrollo: texto plano
         return NoOpPasswordEncoder.getInstance();
+    }
+
+    /**
+     * AuditorAware que extrae el userId del SecurityContextHolder para Spring Data JPA.
+     */
+    @Bean
+    public AuditorAware<Integer> auditorProvider() {
+        return () -> {
+            Authentication auth = SecurityContextHolder
+                                  .getContext()
+                                  .getAuthentication();
+            if (auth != null
+             && auth.isAuthenticated()
+             && auth.getPrincipal() instanceof Integer) {
+                return Optional.of((Integer) auth.getPrincipal());
+            }
+            return Optional.empty();
+        };
     }
 }

@@ -1,22 +1,33 @@
 // src/main/java/com/integracioncomunitaria/notificationapi/entity/audit/BaseEntity.java
 package com.integracioncomunitaria.notificationapi.entity.audit;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@EntityListeners(AuditEntityListener.class)
+// Usamos el listener de Spring Data JPA en lugar del propio
+@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    @CreatedBy
     @Column(name = "id_user_create", updatable = false)
     private Integer idUserCreate;
 
+    @LastModifiedBy
     @Column(name = "id_user_update")
     private Integer idUserUpdate;
 
+    @CreatedDate
     @Column(name = "date_create", updatable = false)
     private LocalDateTime dateCreate;
 
+    @LastModifiedDate
     @Column(name = "date_update")
     private LocalDateTime dateUpdate;
 
