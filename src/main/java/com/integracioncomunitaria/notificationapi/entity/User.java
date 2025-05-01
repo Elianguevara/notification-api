@@ -67,10 +67,19 @@ public class User implements UserDetails {
 
     // --- Métodos de UserDetails ---
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        String roleName = "ROLE_" + profile.getRoleType().name().toUpperCase();
-        return List.of(new SimpleGrantedAuthority(roleName));
+public Collection<? extends GrantedAuthority> getAuthorities() {
+    if (this.profile == null || this.profile.getRoleType() == null) {
+        // Mejor lanzar IllegalStateException que devolver null
+        throw new IllegalStateException(
+          "El usuario " + this.getEmail() + " no tiene rol asignado."
+        );
     }
+    String roleName = "ROLE_" + profile.getRoleType().name().toUpperCase();
+    return List.of(new SimpleGrantedAuthority(roleName));
+}
+
+    
+    
     @Override public String getUsername()        { return username; }
     @Override public String getPassword()        { return password; }
     @Override public boolean isAccountNonExpired()   { return true; }
