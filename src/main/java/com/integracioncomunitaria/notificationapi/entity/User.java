@@ -15,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "`user`")
+
 @Getter @Setter
 public class User extends BaseEntity implements UserDetails {
 
@@ -31,6 +32,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "email", length = 100, unique = true, nullable = false)
     private String email;
+   
+    @Column(name="`group`")
+    private Integer groupId;
 
     @Column(name = "username", length = 55, unique = true, nullable = false)
     private String username;
@@ -47,8 +51,25 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "enabled", columnDefinition = "TINYINT(1)")
     private Boolean enabled;
 
+    // Relación inversa; el dueño es UserProfile.user
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile profile;
+
+    
+    public User() {
+    }
+
+
+    
+
+
+    public User(Integer idUser) {
+        this.idUser = idUser;
+    }
+
+
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -67,4 +88,5 @@ public class User extends BaseEntity implements UserDetails {
     @Override public boolean isAccountNonLocked()       { return enabled; }
     @Override public boolean isCredentialsNonExpired()  { return true; }
     @Override public boolean isEnabled()                { return enabled; }
+   
 }
