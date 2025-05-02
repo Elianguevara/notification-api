@@ -3,6 +3,11 @@ package com.integracioncomunitaria.notificationapi.controller;
 import com.integracioncomunitaria.notificationapi.config.JwtTokenUtil;
 import com.integracioncomunitaria.notificationapi.dto.*;
 import com.integracioncomunitaria.notificationapi.entity.User;
+import com.integracioncomunitaria.notificationapi.service.RegistrationService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -14,35 +19,33 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtUtil;
+    private final RegistrationService regService;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          JwtTokenUtil jwtUtil) {
+                          JwtTokenUtil jwtUtil,
+                          RegistrationService regService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.regService = regService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
-        // 1) Spring intenta autenticar email+clave (usa tu CustomUserDetailsService)
         Authentication auth = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                req.getEmail(),
-                req.getPassword()
-            )
+            new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
         );
-
-        // 2) Extraemos el User con sus authorities
         User user = (User) auth.getPrincipal();
-        String role = user.getAuthorities()
-                          .stream()
+        String role = user.getAuthorities().stream()
                           .findFirst()
                           .map(a -> a.getAuthority())
                           .orElse("ROLE_CLIENTE");
-
-        // 3) Generamos el JWT con idUsuario y rol
         String token = jwtUtil.generateToken(user.getIdUser(), role);
-
-        // 4) Devolvemos el token al cliente
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest req) {
+        regService.register(req);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
