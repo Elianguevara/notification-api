@@ -11,24 +11,14 @@ import lombok.Setter;
 @Getter @Setter
 public class Notification extends BaseEntity {
 
-    public Notification(Integer notifId) {
-        //TODO Auto-generated constructor stub
-    }
-
-    public Notification() {
-        //TODO Auto-generated constructor stub
-    }
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_notification")
     private Integer idNotification;
 
-    @Column(name = "id_provider")
-    private Integer providerId;
-
-    @Column(name = "id_customer")
-    private Integer customerId;
+ 
 
     @Column(length = 255)
     private String type;
@@ -40,15 +30,24 @@ public class Notification extends BaseEntity {
     private Boolean viewed;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_provider", insertable = false, updatable = false)
+    @JoinColumn(name = "id_provider", nullable = true)
     private Provider provider;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_customer", insertable = false, updatable = false)
+    @JoinColumn(name = "id_customer", nullable = true)
     private Customer customer;
 
     public boolean isViewed() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isViewed'");
+        return Boolean.TRUE.equals(this.viewed);
+      }
+
+    public Notification(Integer idNotification) {
+        this.idNotification = idNotification;
     }
+
+    public Notification() {
+    }
+      
+
+      
 }

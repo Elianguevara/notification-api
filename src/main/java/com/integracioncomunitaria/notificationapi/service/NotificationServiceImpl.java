@@ -3,23 +3,22 @@ package com.integracioncomunitaria.notificationapi.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import jakarta.persistence.EntityNotFoundException;
 
 import com.integracioncomunitaria.notificationapi.dto.NotificationCreateDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationHistoryDTO;
 import com.integracioncomunitaria.notificationapi.entity.Customer;
-import com.integracioncomunitaria.notificationapi.entity.Provider;
 import com.integracioncomunitaria.notificationapi.entity.Notification;
 import com.integracioncomunitaria.notificationapi.entity.NotificationHistory;
+import com.integracioncomunitaria.notificationapi.entity.Provider;
+import com.integracioncomunitaria.notificationapi.entity.User;
 import com.integracioncomunitaria.notificationapi.repository.NotificationHistoryRepository;
 import com.integracioncomunitaria.notificationapi.repository.NotificationRepository;
-import com.integracioncomunitaria.notificationapi.repository.UserRepository;
-
-import jakarta.persistence.EntityNotFoundException;
-
 
 @Service
 @Transactional
@@ -27,21 +26,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository repo;
     private final NotificationHistoryRepository historyRepo;
-    //private final UserRepository userRepo; // para auditoría
 
     public NotificationServiceImpl(NotificationRepository repo,
-                                   NotificationHistoryRepository historyRepo,
-                                   UserRepository userRepo) {
+                                   NotificationHistoryRepository historyRepo) {
         this.repo = repo;
         this.historyRepo = historyRepo;
-        //this.userRepo = userRepo;
     }
 
     @Override
     public NotificationDTO create(NotificationCreateDTO dto, Integer currentUserId) {
         Notification n = new Notification();
-        n.setProvider(dto.getProviderId() != null ? new Provider(dto.getProviderId()) : null);
-        n.setCustomer(dto.getCustomerId() != null ? new Customer(dto.getCustomerId()) : null);
+        if (dto.getProviderId() != null) {
+            n.setProvider(new Provider(dto.getProviderId()));
+        }
+        if (dto.getCustomerId() != null) {
+            n.setCustomer(new Customer(dto.getCustomerId()));
+        }
         n.setType(dto.getType());
         n.setMessage(dto.getMessage());
         n.setViewed(false);
@@ -56,10 +56,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationDTO> list(Integer customerId, Integer providerId,
                                       Boolean viewed, LocalDateTime from, LocalDateTime to) {
-        LocalDateTime f = from != null ? from : LocalDateTime.of(1970,1,1,0,0);
+        LocalDateTime f = from != null ? from : LocalDateTime.of(1970, 1, 1, 0, 0);
         LocalDateTime t = to   != null ? to   : LocalDateTime.now();
         return repo.findFiltered(customerId, providerId, viewed, f, t)
-                   .stream().map(this::map).toList();
+                   .stream()
+                   .map(this::map)
+                   .toList();
     }
 
     @Override
@@ -90,14 +92,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationHistoryDTO> history(Integer notificationId) {
-        return historyRepo.findByNotificationId(notificationId)
+        return historyRepo.findByNotification_IdNotification(notificationId)
                           .stream()
                           .map(h -> new NotificationHistoryDTO(
                               h.getIdNotificationHistory(),
                               h.getNotification().getIdNotification(),
                               h.getEvent(),
                               h.getEventDate(),
-                              h.getIdUser()))
+                              h.getUser().getIdUser()
+                          ))
                           .toList();
     }
 
@@ -106,7 +109,9 @@ public class NotificationServiceImpl implements NotificationService {
         h.setNotification(new Notification(notifId));
         h.setEvent(event);
         h.setEventDate(LocalDateTime.now());
-        h.setIdUser(userId);
+        User user = new User();
+        user.setIdUser(userId);
+        h.setUser(user);
         h.setDateCreate(LocalDateTime.now());
         historyRepo.save(h);
     }
@@ -114,8 +119,8 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationDTO map(Notification n) {
         return new NotificationDTO(
             n.getIdNotification(),
-            n.getProvider().getIdProvider(),
-            n.getCustomer().getIdCustomer(),
+            n.getProvider() != null ? n.getProvider().getIdProvider() : null,
+            n.getCustomer() != null ? n.getCustomer().getIdCustomer() : null,
             n.getType(),
             n.getMessage(),
             n.isViewed(),
@@ -124,7 +129,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Integer getCurrentUserId() {
-        return (Integer) SecurityContextHolder.getContext()
-                  .getAuthentication().getPrincipal();
+        return (Integer) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
     }
 }

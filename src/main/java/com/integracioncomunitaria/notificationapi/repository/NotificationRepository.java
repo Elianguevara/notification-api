@@ -2,30 +2,36 @@ package com.integracioncomunitaria.notificationapi.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.integracioncomunitaria.notificationapi.entity.Notification;
-
+@Repository
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
-    List<Notification> findByCustomerId(Integer customerId);
-    List<Notification> findByProviderId(Integer providerId);
+    /**
+     * Antes findByCustomerId, ahora:
+     */
+    List<Notification> findByCustomer_IdCustomer(Integer customerId);
 
-    // Si quieres filtros avanzados:
+    /**
+     * Antes findByProviderId, ahora:
+     */
+    List<Notification> findByProvider_IdProvider(Integer providerId);
+
     @Query("""
       SELECT n FROM Notification n
        WHERE (:customerId IS NULL OR n.customer.idCustomer = :customerId)
-         AND (:providerId IS NULL  OR n.provider.idProvider = :providerId)
-         AND (:viewed IS NULL      OR n.viewed = :viewed)
+         AND (:providerId IS NULL OR n.provider.idProvider = :providerId)
+         AND (:viewed IS NULL     OR n.viewed = :viewed)
          AND n.dateCreate BETWEEN :from AND :to
     """)
     List<Notification> findFiltered(
       @Param("customerId") Integer c,
       @Param("providerId") Integer p,
-      @Param("viewed") Boolean viewed,
-      @Param("from") LocalDateTime from,
-      @Param("to") LocalDateTime to
+      @Param("viewed")     Boolean viewed,
+      @Param("from")       LocalDateTime from,
+      @Param("to")         LocalDateTime to
     );
 }

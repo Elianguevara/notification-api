@@ -30,10 +30,12 @@ public class Petition extends BaseEntity {
     @Column(name = "date_until")
     private LocalDate dateUntil;
 
-    @Column(name = "id_customer")
-    private Integer customerId;
+ 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_customer", insertable = false, updatable = false)
     private Customer customer;
+
+    public Petition() {
+    }
 }

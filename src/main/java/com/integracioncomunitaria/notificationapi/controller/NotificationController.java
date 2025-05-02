@@ -3,6 +3,10 @@ package com.integracioncomunitaria.notificationapi.controller;
 import com.integracioncomunitaria.notificationapi.dto.NotificationCreateDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationHistoryDTO;
+import com.integracioncomunitaria.notificationapi.entity.Customer;
+import com.integracioncomunitaria.notificationapi.entity.Provider;
+import com.integracioncomunitaria.notificationapi.repository.CustomerRepository;
+import com.integracioncomunitaria.notificationapi.repository.ProviderRepository;
 import com.integracioncomunitaria.notificationapi.service.NotificationService;
 
 import jakarta.validation.Valid;
@@ -11,15 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,31 +25,50 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService svc;
+    private final CustomerRepository customerRepo;
+    private final ProviderRepository providerRepo;
 
-    public NotificationController(NotificationService svc) {
+    public NotificationController(NotificationService svc,
+                                  CustomerRepository customerRepo,
+                                  ProviderRepository providerRepo) {
         this.svc = svc;
+        this.customerRepo = customerRepo;
+        this.providerRepo = providerRepo;
     }
 
     @PostMapping
     public ResponseEntity<NotificationDTO> create(
-        @RequestBody @Valid NotificationCreateDTO dto) {
+            @RequestBody @Valid NotificationCreateDTO dto) {
         Integer uid = getCurrentUserId();
         NotificationDTO result = svc.create(dto, uid);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    /** Listado “propio” de notificaciones según quien esté logueado */
     @GetMapping
     public List<NotificationDTO> list(
-        @RequestParam(required = false) Integer customerId,
-        @RequestParam(required = false) Integer providerId,
-        @RequestParam(required = false) Boolean viewed,
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime from,
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime to
+            @RequestParam(required = false) Boolean viewed,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime to
     ) {
+        Integer userId = getCurrentUserId();
+
+        // Resuelvo customerId a partir del userId
+        Integer customerId = customerRepo
+            .findByUser_IdUser(userId)
+            .map(Customer::getIdCustomer)
+            .orElse(null);
+
+        // Resuelvo providerId a partir del userId
+        Integer providerId = providerRepo
+            .findByUser_IdUser(userId)
+            .map(Provider::getIdProvider)
+            .orElse(null);
+
         return svc.list(customerId, providerId, viewed, from, to);
     }
 

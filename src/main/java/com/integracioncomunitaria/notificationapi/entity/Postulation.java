@@ -13,14 +13,9 @@ public class Postulation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_postulation")
+    @Column(name = "idpostulation")
     private Integer idPostulation;
 
-    @Column(name = "id_petition")
-    private Integer petitionId;
-
-    @Column(name = "id_provider")
-    private Integer providerId;
 
     @Column(length = 45)
     private String winner;
@@ -47,4 +42,7 @@ public class Postulation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_provider", insertable = false, updatable = false)
     private Provider provider;
+
+    public Postulation() {
+    }
 }

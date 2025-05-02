@@ -13,9 +13,7 @@ import java.time.LocalDate;
 @Getter @Setter
 public class Customer extends BaseEntity {
 
-    public Customer(Integer customerId) {
-        //TODO Auto-generated constructor stub
-    }
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +50,18 @@ public class Customer extends BaseEntity {
     @Column(name = "gps_lon", precision = 11, scale = 8)
     private BigDecimal gpsLon;
 
-    @Column(name = "id_user")
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
+    
+    
+    
+    // <-- constructor por defecto
+    public Customer() {}
+
+    // tu constructor proxy
+    public Customer(Integer idCustomer) {
+        this.idCustomer = idCustomer;
+    }
+    // …
 }

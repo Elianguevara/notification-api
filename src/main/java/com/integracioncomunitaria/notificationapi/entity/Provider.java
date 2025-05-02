@@ -10,9 +10,7 @@ import lombok.Setter;
 @Getter @Setter
 public class Provider extends BaseEntity {
 
-    public Provider(Integer providerId) {
-        //TODO Auto-generated constructor stub
-    }
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +29,7 @@ public class Provider extends BaseEntity {
     @Column(name = "id_type_provider")
     private Integer typeProviderId;
 
-    @Column(name = "id_category")
-    private Integer categoryId;
-
+    
     @Column(name = "id_grade_provider")
     private Integer gradeProviderId;
 
@@ -46,5 +42,14 @@ public class Provider extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_category", insertable = false, updatable = false)
     private Category category;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
 
+    public Provider() {}
+
+    public Provider(Integer idProvider) {
+        this.idProvider = idProvider;
+    }
 }

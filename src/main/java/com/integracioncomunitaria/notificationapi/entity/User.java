@@ -15,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "`user`")
+
 @Getter @Setter
 public class User extends BaseEntity implements UserDetails {
 
@@ -49,6 +50,10 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile profile;
+    
+    public User() {
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -67,4 +72,5 @@ public class User extends BaseEntity implements UserDetails {
     @Override public boolean isAccountNonLocked()       { return enabled; }
     @Override public boolean isCredentialsNonExpired()  { return true; }
     @Override public boolean isEnabled()                { return enabled; }
+   
 }

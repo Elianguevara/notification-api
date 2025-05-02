@@ -17,29 +17,23 @@ public class NotificationHistory extends BaseEntity {
     @Column(name = "id_notification_history")
     private Integer idNotificationHistory;
 
-    @Column(name = "id_notification")
+    @Column(name = "id_notification", nullable = false)
     private Integer notificationId;
 
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String event;
 
-    @Column(name = "event_date", columnDefinition = "datetime(6)")
+    @Column(name = "event_date", columnDefinition = "datetime(6)", nullable = false)
     private LocalDateTime eventDate;
 
-    @Column(name = "id_user")
-    private Integer userId;
+    @Column(name = "id_user", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_notification", insertable = false, updatable = false)
     private Notification notification;
 
-    public Integer getIdUser() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIdUser'");
+    public NotificationHistory() {
     }
 
-    public void setIdUser(Integer userId2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setIdUser'");
-    }
 }
