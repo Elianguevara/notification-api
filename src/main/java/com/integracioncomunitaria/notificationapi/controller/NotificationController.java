@@ -1,3 +1,4 @@
+// src/main/java/com/integracioncomunitaria/notificationapi/controller/NotificationController.java
 package com.integracioncomunitaria.notificationapi.controller;
 
 import com.integracioncomunitaria.notificationapi.dto.NotificationCreateDTO;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -44,7 +46,7 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    /** Listado “propio” de notificaciones según quien esté logueado */
+    /** Listado “propio” de notificaciones según quién esté logueado */
     @GetMapping
     public List<NotificationDTO> list(
             @RequestParam(required = false) Boolean viewed,
@@ -57,13 +59,11 @@ public class NotificationController {
     ) {
         Integer userId = getCurrentUserId();
 
-        // Resuelvo customerId a partir del userId
         Integer customerId = customerRepo
             .findByUser_IdUser(userId)
             .map(Customer::getIdCustomer)
             .orElse(null);
 
-        // Resuelvo providerId a partir del userId
         Integer providerId = providerRepo
             .findByUser_IdUser(userId)
             .map(Provider::getIdProvider)
@@ -72,9 +72,19 @@ public class NotificationController {
         return svc.list(customerId, providerId, viewed, from, to);
     }
 
+    /**
+     * Obtiene una notificación por ID.
+     * Si está marcada como borrada, responde 410 con un mensaje sencillo.
+     */
     @GetMapping("/{id}")
-    public NotificationDTO getById(@PathVariable Integer id) {
-        return svc.getById(id);
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
+        NotificationDTO dto = svc.getById(id);
+        if (dto.isDeleted()) {
+            return ResponseEntity
+                .status(HttpStatus.GONE)
+                .body(Map.of("message", "Notificación borrada"));
+        }
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{id}")

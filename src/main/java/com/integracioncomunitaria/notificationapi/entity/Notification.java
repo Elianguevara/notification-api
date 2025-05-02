@@ -18,23 +18,21 @@ public class Notification extends BaseEntity {
     @Column(name = "id_notification")
     private Integer idNotification;
 
- 
+    @Column(name = "deleted", columnDefinition = "TINYINT(1)", nullable = false)
+    private Boolean deleted = false;
 
-    @Column(length = 255)
-    private String type;
-
-    @Column(columnDefinition = "text")
+    @Column(name = "message", columnDefinition = "text")
     private String message;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(name = "viewed", columnDefinition = "TINYINT(1)")
     private Boolean viewed;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_provider", nullable = true)
+    @JoinColumn(name = "id_provider")
     private Provider provider;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_customer", nullable = true)
+    @JoinColumn(name = "id_customer")
     private Customer customer;
 
     public boolean isViewed() {

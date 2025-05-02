@@ -41,10 +41,10 @@ public class SecurityConfig {
         http
           .csrf(csrf -> csrf.disable())
           .authorizeHttpRequests(auth -> auth
-             .requestMatchers("/auth/**").permitAll()
-             .requestMatchers("/api/notifications/**")
+                .requestMatchers("/auth/login", "/auth/register", "/error").permitAll()
+                .requestMatchers("/api/notifications/**")
                 .hasAnyAuthority("ROLE_CLIENTE","ROLE_PROVEEDOR","ROLE_AMBOS")
-             .anyRequest().denyAll()
+                .anyRequest().denyAll()
           )
           .userDetailsService(uds)
           .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -23,8 +23,16 @@ public class Category extends BaseEntity {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Provider> providers;
 
+    
     public Category() {
     }
+
+
+    public Category(Integer idCategory) {
+        this.idCategory = idCategory;
+    }
+
+    
 
     
 }

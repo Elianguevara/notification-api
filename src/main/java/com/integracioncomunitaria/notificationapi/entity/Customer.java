@@ -1,10 +1,10 @@
-// src/main/java/com/integracioncomunitaria/notificationapi/entity/Customer.java
 package com.integracioncomunitaria.notificationapi.entity;
 
 import com.integracioncomunitaria.notificationapi.entity.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -13,29 +13,28 @@ import java.time.LocalDate;
 @Getter @Setter
 public class Customer extends BaseEntity {
 
-    
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_customer")
     private Integer idCustomer;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
     @Column(name = "date_year")
     private LocalDate dateYear;
 
-    @Column(length = 20)
+    @Column(name = "dni", length = 20)
     private String dni;
 
-    @Column(length = 50)
+    @Column(name = "email", length = 50)
     private String email;
 
-    @Column(length = 20)
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(length = 50)
+    // ¡ojo que en tu tabla el campo está mal escrito "adress"!
+    @Column(name = "adress", length = 50)
     private String address;
 
     @Column(name = "id_gender_type")
@@ -53,6 +52,7 @@ public class Customer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
+
     
     
     
