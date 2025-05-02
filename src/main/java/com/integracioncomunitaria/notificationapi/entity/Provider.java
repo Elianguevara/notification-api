@@ -25,8 +25,8 @@ public class Provider extends BaseEntity {
     @Column(name = "gps_lat")
     private Float gpsLat;
 
-    // en la tabla se llama "gps_lon"
-    @Column(name = "gps_lon")
+    // en la tabla se llama "gps_long"
+    @Column(name = "gps_long")
     private Float gpsLong;
 
     @Column(name = "id_type_provider")
