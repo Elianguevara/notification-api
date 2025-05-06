@@ -1,4 +1,3 @@
-// src/main/java/com/integracioncomunitaria/notificationapi/dto/NotificationHistoryDTO.java
 package com.integracioncomunitaria.notificationapi.dto;
 
 import java.time.LocalDateTime;
@@ -7,14 +6,52 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Para devolver un evento de historial.
+ * DTO utilizado para enviar al cliente los detalles de un evento
+ * en el historial de una notificación.
+ * Cada instancia representa una acción (CREATED, VIEWED, DELETED, etc.)
+ * ocurrida sobre una notificación.
  */
-@Getter @Setter @AllArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
 public class NotificationHistoryDTO {
-    private Integer id;             // id_notification_history
-    private Integer notificationId; // id_notification
-    private String event;           // event
-    private LocalDateTime eventDate;// event_date
-    private Integer userId;         // id_user
-    private LocalDateTime dateCreate; // date_create
+
+    /**
+     * Identificador único del registro de historial.
+     * Corresponde al campo `id_notification_history` en la base de datos.
+     */
+    private Integer id;
+
+    /**
+     * ID de la notificación a la que pertenece este evento.
+     * Equivale al campo `id_notification` en la tabla de historial.
+     */
+    private Integer notificationId;
+
+    /**
+     * Tipo de evento registrado, por ejemplo:
+     * - "CREATED": cuando se crea la notificación.
+     * - "VIEWED": cuando se marca como vista.
+     * - "DELETED": cuando se marca como eliminada.
+     */
+    private String event;
+
+    /**
+     * Fecha y hora en que ocurrió el evento.
+     * Corresponde al campo `event_date`.
+     */
+    private LocalDateTime eventDate;
+
+    /**
+     * ID del usuario que realizó la acción.
+     * Equivale al campo `id_user` en la tabla de historial.
+     */
+    private Integer userId;
+
+    /**
+     * Fecha y hora en que se inserta el registro de historial.
+     * Usualmente coincide con `eventDate` y se usa para auditoría adicional.
+     * Corresponde al campo `date_create`.
+     */
+    private LocalDateTime dateCreate;
 }

@@ -1,15 +1,31 @@
-// src/main/java/com/integracioncomunitaria/notificationapi/dto/NotificationCreateDTO.java
 package com.integracioncomunitaria.notificationapi.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Payload para crear una nueva notificación.
+ * DTO (Data Transfer Object) utilizado para recibir los datos
+ * necesarios al crear una nueva notificación vía API REST.
  */
-@Getter @Setter
+@Getter
+@Setter
 public class NotificationCreateDTO {
-    private Integer providerId;  // id_provider
-    private Integer customerId;  // id_customer
-    private String message;      // message
+
+    /**
+     * ID del proveedor al que se asocia la notificación.
+     * Puede ser null si la notificación no está dirigida a un proveedor.
+     */
+    private Integer providerId;
+
+    /**
+     * ID del cliente al que se asocia la notificación.
+     * Puede ser null si la notificación no está dirigida a un cliente.
+     */
+    private Integer customerId;
+
+    /**
+     * Contenido del mensaje de la notificación.
+     * Campo obligatorio: describe la información que se desea notificar.
+     */
+    private String message;
 }
