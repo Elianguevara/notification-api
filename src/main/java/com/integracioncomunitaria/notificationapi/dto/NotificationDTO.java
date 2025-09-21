@@ -1,6 +1,8 @@
 package com.integracioncomunitaria.notificationapi.dto;
 
 import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +38,7 @@ public class NotificationDTO {
      * Contenido del mensaje de la notificación.
      * Equivale al campo `message`.
      */
+    @NotBlank(message = "El mensaje no puede estar vacío") // Añadir validación si el mensaje es obligatorio
     private String message;
 
     /**

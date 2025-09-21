@@ -26,6 +26,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 // Importación del servicio personalizado de usuario
 import com.integracioncomunitaria.notificationapi.service.CustomUserDetailsService;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,44 +60,44 @@ public class SecurityConfig {
         var jwtFilter = new JwtAuthenticationFilter(jwtUtil);
 
         http
-            // Configuración de CORS y desactivación de protección CSRF
-            .cors().and()
-            .csrf(csrf -> csrf.disable())
+                // Configuración de CORS y desactivación de protección CSRF
+                .cors().and()
+                .csrf(csrf -> csrf.disable())
 
-            // Configuración de autorización sobre rutas específicas
-            .authorizeHttpRequests(auth -> auth
-                // Rutas públicas (sin autenticación requerida)
-                .requestMatchers("/auth/login", "/auth/register", "/error").permitAll()
+                // Configuración de autorización sobre rutas específicas
+                .authorizeHttpRequests(auth -> auth
+                        // Rutas públicas (sin autenticación requerida)
+                        .requestMatchers("/auth/login", "/auth/register", "/error").permitAll()
 
-                // Rutas protegidas (requieren roles específicos)
-                .requestMatchers("/api/notifications/**")
-                .hasAnyAuthority("ROLE_CLIENTE","ROLE_PROVEEDOR","ROLE_AMBOS")
+                        // Rutas protegidas (requieren roles específicos)
+                        .requestMatchers("/api/notifications/**")
+                        .hasAnyAuthority("ROLE_CLIENTE","ROLE_PROVEEDOR","ROLE_AMBOS")
 
-                // Todas las demás rutas quedan denegadas por seguridad
-                .anyRequest().denyAll()
-            )
+                        // Todas las demás rutas quedan denegadas por seguridad
+                        .anyRequest().denyAll()
+                )
 
-            // Define el servicio que carga detalles de usuario
-            .userDetailsService(uds)
+                // Define el servicio que carga detalles de usuario
+                .userDetailsService(uds)
 
-            // Inserta el filtro JWT antes del filtro de autenticación estándar de Spring Security
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                // Inserta el filtro JWT antes del filtro de autenticación estándar de Spring Security
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     /**
-     * Configuración personalizada para permitir peticiones desde el frontend en localhost:5173 (por ejemplo, React).
+     * Configuración personalizada para permitir peticiones desde el frontend en localhost:5173 y aplicaciones móviles.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Origen permitido (frontend local)
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Orígenes permitidos, incluyendo "null" para aplicaciones móviles.
+        config.setAllowedOrigins(List.of("http://localhost:5173", "null"));
         // Métodos HTTP permitidos
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         // Cabeceras permitidas en las solicitudes
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
         // Permitir cookies y credenciales en peticiones
         config.setAllowCredentials(true);
 
@@ -114,10 +116,10 @@ public class SecurityConfig {
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authBuilder
-            // Servicio que carga datos del usuario desde la base de datos
-            .userDetailsService(uds)
-            // Codificador de contraseña utilizado (en este caso, sin encriptación - NO seguro para producción)
-            .passwordEncoder(passwordEncoder());
+                // Servicio que carga datos del usuario desde la base de datos
+                .userDetailsService(uds)
+                // Codificador de contraseña utilizado (en este caso, sin encriptación - NO seguro para producción)
+                .passwordEncoder(passwordEncoder());
 
         return authBuilder.build();
     }

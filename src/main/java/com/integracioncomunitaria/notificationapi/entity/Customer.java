@@ -75,8 +75,8 @@ public class Customer extends BaseEntity {
      * Clave foránea al tipo de género.
      * Guarda el ID de la tabla `gender_type`.
      */
-    @Column(name = "id_gender_type")
-    private Integer genderType;
+    //@Column(name = "id_gender_type")
+    //private Integer genderType;
 
     /**
      * Clave foránea a la tabla de ciudades.

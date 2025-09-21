@@ -17,11 +17,11 @@ public class RegistrationService {
 
     // Valores predeterminados para crear nuevos usuarios/proveedores
     private static final String DEFAULT_ADDRESS             = "Sin especificar";
-    private static final Integer DEFAULT_TYPE_PROVIDER_ID   = 1;
-    private static final Integer DEFAULT_GRADE_PROVIDER_ID  = 1;
-    private static final Integer DEFAULT_PROFESSION_ID      = 1;
+    private static final Integer DEFAULT_TYPE_PROVIDER_ID   = 35;
+    private static final Integer DEFAULT_GRADE_PROVIDER_ID  = 24;
+    private static final Integer DEFAULT_PROFESSION_ID      = 1158;
     private static final Long    DEFAULT_OFFER_ID           = 1L;
-    private static final Integer DEFAULT_CATEGORY_ID        = 1;
+    private static final Integer DEFAULT_CATEGORY_ID        = 12;
 
     // Repositorios para interactuar con la base de datos
     private final UserRepository userRepo;

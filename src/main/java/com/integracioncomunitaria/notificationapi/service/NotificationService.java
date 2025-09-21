@@ -6,6 +6,7 @@ import java.util.List;
 import com.integracioncomunitaria.notificationapi.dto.NotificationCreateDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationHistoryDTO;
+import com.integracioncomunitaria.notificationapi.entity.Notification;
 
 /**
  * Interfaz que define las operaciones disponibles para gestionar notificaciones.
@@ -73,4 +74,6 @@ public interface NotificationService {
      * @return                Lista de DTOs con cada evento registrado para esa notificación.
      */
     List<NotificationHistoryDTO> history(Integer notificationId);
+
+
 }

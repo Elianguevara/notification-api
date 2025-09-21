@@ -51,7 +51,7 @@ public class Provider extends BaseEntity {
      * Longitud GPS del proveedor.
      * En la base de datos se denomina `gps_long`.
      */
-    @Column(name = "gps_long")
+    @Column(name = "gps_lon")
     private Float gpsLong;
 
     /**

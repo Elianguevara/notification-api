@@ -5,6 +5,7 @@ import com.integracioncomunitaria.notificationapi.dto.NotificationCreateDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationDTO;
 import com.integracioncomunitaria.notificationapi.dto.NotificationHistoryDTO;
 import com.integracioncomunitaria.notificationapi.entity.Customer;
+import com.integracioncomunitaria.notificationapi.entity.Notification;
 import com.integracioncomunitaria.notificationapi.entity.Provider;
 
 // Repositorios JPA para obtener información del usuario
@@ -125,7 +126,7 @@ public class NotificationController {
      * Marca una notificación específica como vista por el usuario autenticado.
      * Endpoint: PUT /api/notifications/{id}/view
      */
-    @PutMapping("/{id}/view")
+    @PatchMapping("/{id}/view") // Cambiado a PatchMapping
     public NotificationDTO markAsViewed(@PathVariable Integer id) {
         Integer uid = getCurrentUserId();
         return svc.markAsViewed(id, uid);
@@ -150,4 +151,6 @@ public class NotificationController {
                          .getAuthentication()
                          .getPrincipal();
     }
+
+   
 }
